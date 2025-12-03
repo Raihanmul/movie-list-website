@@ -1,5 +1,4 @@
 import axios from "axios";
-import Constants from "expo-constants";
 import { useEffect, useState } from "react";
 import { FlatList, Image, Text, View } from "react-native";
 
@@ -15,18 +14,16 @@ export default function HomeScreen() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const API_KEY = Constants.expoConfig?.extra?.OMDB_API_KEY;
-
   const fetchMovies = async () => {
     setLoading(true);
 
     try {
       const res = await axios.get(
-        `https://www.omdbapi.com/?apikey=${API_KEY}&s=2024&type=movie&page=1`
+        "https://www.omdbapi.com/?apikey=fa0611ea&s=wednesday&page=1"
       );
 
       if (res.data.Search) {
-        setMovies(res.data.Search);
+        setMovies(res.data.Search as Movie[]);
       }
     } catch (error) {
       console.log("Error fetching movies:", error);
@@ -47,10 +44,6 @@ export default function HomeScreen() {
         paddingHorizontal: 20,
       }}
     >
-      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
-        🎬 Latest Movies
-      </Text>
-
       {loading ? (
         <Text>Loading...</Text>
       ) : (
@@ -58,23 +51,11 @@ export default function HomeScreen() {
           data={movies}
           keyExtractor={(item) => item.imdbID}
           renderItem={({ item }) => (
-            <View style={{ marginBottom: 20, flexDirection: "row", gap: 12 }}>
-              <Image
-                source={{
-                  uri:
-                    item.Poster !== "N/A"
-                      ? item.Poster
-                      : "https://via.placeholder.com/120x180",
-                }}
-                style={{ width: 100, height: 150, borderRadius: 8 }}
-              />
-
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 18, fontWeight: "600" }}>
-                  {item.Title}
-                </Text>
-                <Text style={{ color: "#666" }}>{item.Year}</Text>
-              </View>
+            <View>
+              <Image source={{ uri: item.Poster }} />
+              <Text style={{ fontSize: 18, marginBottom: 6 }}>
+                {item.Title} ({item.Year})
+              </Text>
             </View>
           )}
         />
