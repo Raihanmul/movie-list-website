@@ -1,7 +1,10 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import axios from "axios";
 import Constants from "expo-constants";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, Image, Text, View } from "react-native";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type Movie = {
   Title: string;
@@ -12,6 +15,7 @@ type Movie = {
 };
 
 export default function HomeScreen() {
+  const router = useRouter();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,19 +44,15 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        paddingTop: 50,
-        paddingHorizontal: 20,
-      }}
-    >
+    <SafeAreaView style={styles.container}>
       <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
-        🎬 Latest Movies
+        MovieList
       </Text>
 
       {loading ? (
-        <Text>Loading...</Text>
+        <View style={{ flex: 1 }}>
+          <Text>Loading...</Text>
+        </View>
       ) : (
         <FlatList
           data={movies}
@@ -79,6 +79,40 @@ export default function HomeScreen() {
           )}
         />
       )}
-    </View>
+      <View style={styles.navContainer}>
+        <View style={styles.navItem}>
+          <Ionicons name="home" size={24} color="blue" />
+          <Text>Home</Text>
+        </View>
+        <View style={styles.navItem}>
+          <Ionicons
+            name="bookmark-outline"
+            size={24}
+            color="gray"
+            onPress={() => router.push("/savedMovie")}
+          />
+          <Text>Saved</Text>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+
+  navContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderColor: "#eee",
+  },
+
+  navItem: {
+    alignItems: "center",
+  },
+});
