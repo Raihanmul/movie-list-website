@@ -2,6 +2,7 @@ import axios from "axios";
 import Constants from "expo-constants";
 import { useEffect, useState } from "react";
 import { FlatList, Image, Text, View } from "react-native";
+import StarRating from "./components/StarRating";
 
 type Movie = {
   Title: string;
@@ -9,6 +10,7 @@ type Movie = {
   imdbID: string;
   Type: string;
   Poster: string;
+  imdbRating?: string;
 };
 
 export default function HomeScreen() {
@@ -18,22 +20,36 @@ export default function HomeScreen() {
   const API_KEY = Constants.expoConfig?.extra?.OMDB_API_KEY;
 
   const fetchMovies = async () => {
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const res = await axios.get(
-        `https://www.omdbapi.com/?apikey=${API_KEY}&s=2024&type=movie&page=1`
+  try {
+    const res = await axios.get(
+      `https://www.omdbapi.com/?apikey=${API_KEY}&s=wicked&page=1`
+    );
+
+    if (res.data.Search) {
+      const moviesWithRatings = await Promise.all(
+        res.data.Search.map(async (movie: Movie) => {
+          const detail = await axios.get(
+            `https://www.omdbapi.com/?apikey=${API_KEY}&i=${movie.imdbID}`
+          );
+
+          return {
+            ...movie,
+            imdbRating: detail.data.imdbRating, 
+          };
+        })
       );
 
-      if (res.data.Search) {
-        setMovies(res.data.Search);
-      }
-    } catch (error) {
-      console.log("Error fetching movies:", error);
-    } finally {
-      setLoading(false);
+      setMovies(moviesWithRatings);
     }
-  };
+  } catch (error) {
+    console.log("Error fetching movies:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchMovies();
@@ -69,12 +85,17 @@ export default function HomeScreen() {
                 style={{ width: 100, height: 150, borderRadius: 8 }}
               />
 
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 18, fontWeight: "600" }}>
-                  {item.Title}
-                </Text>
-                <Text style={{ color: "#666" }}>{item.Year}</Text>
-              </View>
+             <View style={{ flex: 1 }}>
+  <Text style={{ fontSize: 18, fontWeight: "600" }}>
+    {item.Title}
+  </Text>
+
+  <Text style={{ color: "#666" }}>{item.Year}</Text>
+
+  {item.imdbRating && (
+    <StarRating rating={item.imdbRating} />
+  )}
+</View>
             </View>
           )}
         />
