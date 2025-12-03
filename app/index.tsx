@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import StarRating from "./components/StarRating";
 
 type Movie = {
   Title: string;
@@ -12,6 +13,7 @@ type Movie = {
   imdbID: string;
   Type: string;
   Poster: string;
+  imdbRating?: string;
 };
 
 export default function HomeScreen() {
@@ -26,11 +28,24 @@ export default function HomeScreen() {
 
     try {
       const res = await axios.get(
-        `https://www.omdbapi.com/?apikey=${API_KEY}&s=2024&type=movie&page=1`
+        `https://www.omdbapi.com/?apikey=${API_KEY}&s=wicked&page=1`
       );
 
       if (res.data.Search) {
-        setMovies(res.data.Search);
+        const moviesWithRatings = await Promise.all(
+          res.data.Search.map(async (movie: Movie) => {
+            const detail = await axios.get(
+              `https://www.omdbapi.com/?apikey=${API_KEY}&i=${movie.imdbID}`
+            );
+
+            return {
+              ...movie,
+              imdbRating: detail.data.imdbRating,
+            };
+          })
+        );
+
+        setMovies(moviesWithRatings);
       }
     } catch (error) {
       console.log("Error fetching movies:", error);
@@ -73,7 +88,10 @@ export default function HomeScreen() {
                 <Text style={{ fontSize: 18, fontWeight: "600" }}>
                   {item.Title}
                 </Text>
+
                 <Text style={{ color: "#666" }}>{item.Year}</Text>
+
+                {item.imdbRating && <StarRating rating={item.imdbRating} />}
               </View>
             </View>
           )}
