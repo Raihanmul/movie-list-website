@@ -108,19 +108,17 @@ export default function HomeScreen() {
         />
       )}
       <View style={styles.navContainer}>
-        <View style={styles.navItem}>
+        <TouchableOpacity style={styles.navItem}>
           <Ionicons name="home" size={24} color="blue" />
           <Text>Home</Text>
-        </View>
-        <View style={styles.navItem}>
-          <Ionicons
-            name="bookmark-outline"
-            size={24}
-            color="gray"
-            onPress={() => router.push("/savedMovie")}
-          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/savedMovie")}
+        >
+          <Ionicons name="bookmark-outline" size={24} color="gray" />
           <Text>Saved</Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
