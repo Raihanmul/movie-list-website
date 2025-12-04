@@ -2,8 +2,16 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import StarRating from "../components/StarRating";
 
 type Movie = {
   Title: string;
@@ -11,6 +19,7 @@ type Movie = {
   imdbID: string;
   Type: string;
   Poster: string;
+  imdbRating?: string;
 };
 
 export default function SavedMovie() {
@@ -52,7 +61,10 @@ export default function SavedMovie() {
           data={movies}
           keyExtractor={(item) => item.imdbID}
           renderItem={({ item }) => (
-            <View style={{ marginBottom: 20, flexDirection: "row", gap: 12 }}>
+            <TouchableOpacity
+              style={{ marginBottom: 20, flexDirection: "row", gap: 12 }}
+              onPress={() => router.push(`/detail/${item.imdbID}`)}
+            >
               <Image
                 source={{
                   uri:
@@ -62,13 +74,17 @@ export default function SavedMovie() {
                 }}
                 style={{ width: 100, height: 150, borderRadius: 8 }}
               />
+
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 18, fontWeight: "600" }}>
                   {item.Title}
                 </Text>
+
                 <Text style={{ color: "#666" }}>{item.Year}</Text>
+
+                {item.imdbRating && <StarRating rating={item.imdbRating} />}
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
       )}
