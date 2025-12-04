@@ -10,6 +10,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import StarRating from "./components/StarRating";
@@ -20,22 +21,25 @@ type Movie = {
   imdbID: string;
   Type: string;
   Poster: string;
-  imdbRating?: string;
+  imdbRating?: number;
 };
 
 export default function HomeScreen() {
   const router = useRouter();
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [series, setSeries] = useState<Movie[]>([]);
+  const [highest, setHighest] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
   const API_KEY = Constants.expoConfig?.extra?.OMDB_API_KEY;
 
+  const currentYear = new Date().getFullYear();
+
   const fetchMovies = async () => {
     setLoading(true);
-
     try {
       const res = await axios.get(
-        `https://www.omdbapi.com/?apikey=${API_KEY}&s=2025&year=2025&page=1`
+        `https://www.omdbapi.com/?apikey=${API_KEY}&s=movie&y=${currentYear}&type=movie&page=1`
       );
 
       if (res.data.Search) {
@@ -61,13 +65,70 @@ export default function HomeScreen() {
     }
   };
 
+  const fetchSeries = async () => {
+    try {
+      const res = await axios.get(
+        `https://www.omdbapi.com/?apikey=${API_KEY}&s=series&type=series&page=1`
+      );
+
+      if (res.data.Search) {
+        const seriesWithRatings = await Promise.all(
+          res.data.Search.map(async (item: Movie) => {
+            const detail = await axios.get(
+              `https://www.omdbapi.com/?apikey=${API_KEY}&i=${item.imdbID}`
+            );
+            return { ...item, imdbRating: detail.data.imdbRating };
+          })
+        );
+
+        setSeries(seriesWithRatings);
+      }
+    } catch (e) {
+      console.log("Error fetching series:", e);
+    }
+  };
+
+ const fetchHighest = async () => {
+  try {
+    const res = await axios.get(
+      `https://www.omdbapi.com/?apikey=${API_KEY}&s=movie&page=3`
+    );
+
+    if (res.data.Search) {
+      const highestWithRatings = await Promise.all(
+        res.data.Search.map(async (item: Movie) => {
+          const detail = await axios.get(
+            `https://www.omdbapi.com/?apikey=${API_KEY}&i=${item.imdbID}`
+          );
+          return { ...item, imdbRating: parseFloat(detail.data.imdbRating) };
+        })
+      );
+
+      highestWithRatings.sort((a, b) => b.imdbRating! - a.imdbRating!);
+      setHighest(highestWithRatings);
+    }
+  } catch (e) {
+    console.log("Error fetching Highest:", e);
+  }
+};
+
   useEffect(() => {
     fetchMovies();
+    fetchSeries();
+    fetchHighest();
   }, []);
 
   return (
+    <ScrollView>
     <SafeAreaView style={styles.container}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: "bold",
+          marginBottom: 20,
+          color: "#A1A1E0",
+        }}
+      >
         MovieList
       </Text>
 
@@ -76,12 +137,76 @@ export default function HomeScreen() {
           <Text>Loading...</Text>
         </View>
       ) : (
+        <View>
+          <Text
+            style={{
+              color: "#FFFFFF",
+              fontWeight: "bold",
+              fontSize: 20,
+              marginBottom: 10,
+            }}
+          >
+            New Movies
+          </Text>
+
+          <FlatList
+            data={movies}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.imdbID}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={{ width: 120, marginRight: 14 }}
+                onPress={() => router.push(`/detail/${item.imdbID}`)}
+              >
+                <Image
+                  source={{
+                    uri:
+                      item.Poster !== "N/A"
+                        ? item.Poster
+                        : "https://via.placeholder.com/120x180",
+                  }}
+                  style={{ width: 120, height: 180, borderRadius: 8 }}
+                />
+
+                <Text
+                  style={{
+                    color: "#FFF",
+                    fontSize: 13,
+                    fontWeight: "600",
+                    marginTop: 6,
+                  }}
+                  numberOfLines={1}
+                >
+                  {item.Title}
+                </Text>
+                <Text style={{ color: "#999", fontSize: 12 }}>{item.Year}</Text>
+                <Text>{item.imdbRating && <StarRating rating={item.imdbRating} />}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      )}
+      <View style={{ marginTop: 30 }}>
+        <Text
+          style={{
+            color: "#FFFFFF",
+            fontWeight: "bold",
+            fontSize: 20,
+            paddingBottom: 10,
+          }}
+        >
+          Popular Series
+        </Text>
+
         <FlatList
-          data={movies}
+          data={series}
+          horizontal
+          showsHorizontalScrollIndicator={false}
           keyExtractor={(item) => item.imdbID}
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={{ marginBottom: 20, flexDirection: "row", gap: 12 }}
+              style={{ width: 120, marginRight: 14 }}
               onPress={() => router.push(`/detail/${item.imdbID}`)}
             >
               <Image
@@ -91,26 +216,75 @@ export default function HomeScreen() {
                       ? item.Poster
                       : "https://via.placeholder.com/120x180",
                 }}
-                style={{ width: 100, height: 150, borderRadius: 8 }}
+                style={{ width: 120, height: 180, borderRadius: 8 }}
               />
 
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 18, fontWeight: "600" }}>
-                  {item.Title}
-                </Text>
+              <Text
+                style={{
+                  color: "#FFF",
+                  fontSize: 13,
+                  fontWeight: "600",
+                  marginTop: 6,
+                }}
+                numberOfLines={1}
+              >
+                {item.Title}
+              </Text>
 
-                <Text style={{ color: "#666" }}>{item.Year}</Text>
+              <Text style={{ color: "#999", fontSize: 12 }}>{item.Year}</Text>
 
-                {item.imdbRating && <StarRating rating={item.imdbRating} />}
-              </View>
+              <Text>{item.imdbRating && <StarRating rating={item.imdbRating} />}</Text>
             </TouchableOpacity>
           )}
         />
-      )}
+      </View>
+<View style={{ marginTop: 26 }}>
+  <Text style={{ color: "#FFFFFF", fontWeight: "bold", fontSize: 20, marginBottom: 10 }}>
+    Movies to watch
+  </Text>
+
+  <FlatList
+    data={highest}
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    keyExtractor={(item) => item.imdbID}
+    renderItem={({ item }) => (
+      <TouchableOpacity
+        style={{ width: 120, marginRight: 14 }}
+        onPress={() => router.push(`/detail/${item.imdbID}`)}
+      >
+        <Image
+          source={{
+            uri: item.Poster !== "N/A"
+              ? item.Poster
+              : "https://via.placeholder.com/120x180",
+          }}
+          style={{ width: 120, height: 180, borderRadius: 8 }}
+        />
+
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: "700",
+            color: "#FFFFFF",
+            marginTop: 8,
+          }}
+          numberOfLines={1}
+        >
+          {item.Title}
+        </Text>
+
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+         <Text>{item.imdbRating && <StarRating rating={item.imdbRating} />}</Text> 
+          <Text style={{ color: "#ccc" }}>({item.Year})</Text>
+        </View>
+      </TouchableOpacity>
+    )}
+  />
+</View>
       <View style={styles.navContainer}>
         <View style={styles.navItem}>
-          <Ionicons name="home" size={24} color="blue" />
-          <Text>Home</Text>
+          <Ionicons name="home" size={24} color="#A1A1E0" />
         </View>
         <View style={styles.navItem}>
           <Ionicons
@@ -119,10 +293,10 @@ export default function HomeScreen() {
             color="gray"
             onPress={() => router.push("/savedMovie")}
           />
-          <Text>Saved</Text>
         </View>
       </View>
     </SafeAreaView>
+    </ScrollView>
   );
 }
 
@@ -130,6 +304,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
+    backgroundColor: "#16182D",
+    paddingBottom: 70,
+    
   },
 
   navContainer: {
@@ -137,7 +314,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderColor: "#eee",
+    borderColor: "#15151C",
+    backgroundColor: "#15151C",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 
   navItem: {
