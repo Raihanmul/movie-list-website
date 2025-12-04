@@ -1,10 +1,17 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
-import axios from "axios";
-import Constants from "expo-constants";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import StarRating from "../components/StarRating";
 
 type Movie = {
   Title: string;
@@ -12,6 +19,7 @@ type Movie = {
   imdbID: string;
   Type: string;
   Poster: string;
+  imdbRating?: number;
 };
 
 export default function SavedMovie() {
@@ -19,46 +27,44 @@ export default function SavedMovie() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const API_KEY = Constants.expoConfig?.extra?.OMDB_API_KEY;
-
-  const fetchMovies = async () => {
+  // Load saved movies from AsyncStorage
+  const loadSaved = async () => {
     setLoading(true);
-
     try {
-      const res = await axios.get(
-        `https://www.omdbapi.com/?apikey=${API_KEY}&s=2024&type=movie&page=1`
-      );
-
-      if (res.data.Search) {
-        setMovies(res.data.Search);
-      }
+      const saved = await AsyncStorage.getItem("savedMovies");
+      setMovies(saved ? JSON.parse(saved) : []);
     } catch (error) {
-      console.log("Error fetching movies:", error);
+      console.log("Error loading saved:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchMovies();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadSaved();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
-        MovieList
+        Saved Movies
       </Text>
 
       {loading ? (
-        <View style={{ flex: 1 }}>
-          <Text>Loading...</Text>
-        </View>
+        <Text>Loading...</Text>
+      ) : movies.length === 0 ? (
+        <Text>Belum ada film yang disimpan</Text>
       ) : (
         <FlatList
           data={movies}
           keyExtractor={(item) => item.imdbID}
           renderItem={({ item }) => (
-            <View style={{ marginBottom: 20, flexDirection: "row", gap: 12 }}>
+            <TouchableOpacity
+              style={{ marginBottom: 20, flexDirection: "row", gap: 12 }}
+              onPress={() => router.push(`/detail/${item.imdbID}`)}
+            >
               <Image
                 source={{
                   uri:
@@ -73,12 +79,16 @@ export default function SavedMovie() {
                 <Text style={{ fontSize: 18, fontWeight: "600" }}>
                   {item.Title}
                 </Text>
+
                 <Text style={{ color: "#666" }}>{item.Year}</Text>
+
+                {item.imdbRating && <StarRating rating={item.imdbRating} />}
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
       )}
+
       <View style={styles.navContainer}>
         <View style={styles.navItem}>
           <Ionicons
@@ -91,7 +101,7 @@ export default function SavedMovie() {
         </View>
         <View style={styles.navItem}>
           <Ionicons name="bookmark" size={24} color="yellow" />
-          <Text>Home</Text>
+          <Text>Saved</Text>
         </View>
       </View>
     </SafeAreaView>
@@ -103,7 +113,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
-
   navContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -111,7 +120,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: "#eee",
   },
-
   navItem: {
     alignItems: "center",
   },
