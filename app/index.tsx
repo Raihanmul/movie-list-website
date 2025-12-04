@@ -3,7 +3,14 @@ import axios from "axios";
 import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import StarRating from "./components/StarRating";
 
@@ -28,7 +35,7 @@ export default function HomeScreen() {
 
     try {
       const res = await axios.get(
-        `https://www.omdbapi.com/?apikey=${API_KEY}&s=wicked&page=1`
+        `https://www.omdbapi.com/?apikey=${API_KEY}&s=2025&year=2025&page=1`
       );
 
       if (res.data.Search) {
@@ -73,7 +80,10 @@ export default function HomeScreen() {
           data={movies}
           keyExtractor={(item) => item.imdbID}
           renderItem={({ item }) => (
-            <View style={{ marginBottom: 20, flexDirection: "row", gap: 12 }}>
+            <TouchableOpacity
+              style={{ marginBottom: 20, flexDirection: "row", gap: 12 }}
+              onPress={() => router.push(`/detail/${item.imdbID}`)}
+            >
               <Image
                 source={{
                   uri:
@@ -93,7 +103,7 @@ export default function HomeScreen() {
 
                 {item.imdbRating && <StarRating rating={item.imdbRating} />}
               </View>
-            </View>
+            </TouchableOpacity>
           )}
         />
       )}
