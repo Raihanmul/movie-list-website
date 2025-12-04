@@ -53,9 +53,13 @@ export default function SavedMovie() {
       </Text>
 
       {loading ? (
-        <Text>Loading...</Text>
+        <View style={{ flex: 1 }}>
+          <Text>Loading...</Text>
+        </View>
       ) : movies.length === 0 ? (
-        <Text>Belum ada film yang disimpan</Text>
+        <View style={{ flex: 1 }}>
+          <Text>Belum ada film yang disimpan</Text>
+        </View>
       ) : (
         <FlatList
           data={movies}
