@@ -19,7 +19,7 @@ type Movie = {
   imdbID: string;
   Type: string;
   Poster: string;
-  imdbRating?: string;
+  imdbRating?: number;
 };
 
 export default function SavedMovie() {
