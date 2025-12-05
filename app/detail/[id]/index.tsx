@@ -42,6 +42,13 @@ export default function MovieDetailPage() {
 
   const API_KEY = Constants.expoConfig?.extra?.OMDB_API_KEY;
 
+  const renderInfo = (label: string, value: string) => (
+    <View style={styles.infoRow} key={label}>
+      <Text style={styles.infoLabel}>{label}</Text>
+      <Text style={styles.infoValue}>{value}</Text>
+    </View>
+  );
+
   const fetchDetail = useCallback(async () => {
     setLoading(true);
     try {
@@ -195,21 +202,23 @@ export default function MovieDetailPage() {
   }
 
   return (
-     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-      {/* Back Button */}
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: 40 }}
+    >
       <Ionicons
         name="arrow-back"
-        size={28}
+        size={30}
+        color="white"
         onPress={() => router.back()}
         style={styles.backBtn}
       />
 
-      <Text style={styles.title}>
+      <Text style={styles.mainTitle}>
         {movie.Title} ({movie.Year})
       </Text>
 
-      <View style={{ position: "relative" }}>
+      <View style={styles.posterWrapper}>
         <Image
           source={{
             uri:
@@ -219,8 +228,6 @@ export default function MovieDetailPage() {
           }}
           style={styles.poster}
         />
-
-        {/* SAVE BUTTON */}
         <TouchableOpacity onPress={toggleSave} style={styles.saveBtn}>
           <Ionicons
             name={isSaved ? "bookmark" : "bookmark-outline"}
@@ -230,71 +237,63 @@ export default function MovieDetailPage() {
         </TouchableOpacity>
       </View>
 
-      {movie.imdbRating && movie.imdbRating !== "N/A" && (
-  <View style={{ flexDirection: "row", alignItems: "center" }}>
-    <StarRating rating={Number(movie.imdbRating) || 0} />
+      <Text style={styles.sectionTitle}>Movie Info</Text>
 
-    <Text style={{ marginLeft: 6, color: "gray", fontSize: 14 }}>
-      {Number(movie.imdbRating).toFixed(1)}/10
-    </Text>
-  </View>
-)}
-
-
-     <View style={styles.infoBox}>
-  <Text style={{ color: "#FFFFFF" }}>
-    <Text style={styles.bold}>Synopsis:</Text> {movie.Plot}
-  </Text>
-  <Text style={{ color: "#FFFFFF" }}>
-    <Text style={styles.bold}>Director:</Text> {movie.Director}
-  </Text>
-  <Text style={{ color: "#FFFFFF" }}>
-    <Text style={styles.bold}>Writer:</Text> {movie.Writer}
-  </Text>
-  <Text style={{ color: "#FFFFFF" }}>
-    <Text style={styles.bold}>Rated:</Text> {movie.Rated}
-  </Text>
-  <Text style={{ color: "#FFFFFF" }}>
-    <Text style={styles.bold}>Genre:</Text> {movie.Genre}
-  </Text>
-  <Text style={{ color: "#FFFFFF" }}>
-    <Text style={styles.bold}>Main Actors:</Text> {movie.Actors}
-  </Text>
-  <Text style={{ color: "#FFFFFF" }}>
-    <Text style={styles.bold}>Type:</Text> {movie.Type}
-  </Text>
-  <Text style={{ color: "#FFFFFF" }}>
-    <Text style={styles.bold}>Runtime:</Text> {movie.Runtime}
-  </Text>
-  <Text style={{ color: "#FFFFFF" }}>
-    <Text style={styles.bold}>Released:</Text> {movie.Released}
-  </Text>
-</View>
+      <View style={styles.infoBox}>
+        {renderInfo("Synopsis", movie.Plot)}
+        {renderInfo("Director", movie.Director)}
+        {renderInfo("Writer", movie.Writer)}
+        {renderInfo("Rated", movie.Rated)}
+        {renderInfo("Genre", movie.Genre)}
+        {renderInfo("MainActor", movie.Actors)}
+        {renderInfo("Rating", `${movie.imdbRating}/10`)}
+        {renderInfo("Type", movie.Type)}
+        {renderInfo("RunTime", movie.Runtime)}
+        {renderInfo("Released", movie.Released)}
+      </View>
     </ScrollView>
-    </View>
   );
 }
 
 const styles = StyleSheet.create({
-   container: {
+  container: {
     flex: 1,
-    backgroundColor: "#16182D", 
+    backgroundColor: "#0D0F1C",
+    paddingHorizontal: 18,
   },
-  scrollContent: {
-    padding: 16,
-    backgroundColor: "#16182D", 
-  },
-  centered: { flex: 1, justifyContent: "center", alignItems: "center" },
 
-  backBtn: { marginBottom: 12 },
+  backBtn: {
+    marginTop: 10,
+    marginBottom: 10,
+  },
+
+  mainTitle: {
+    fontSize: 30,
+    fontWeight: "800",
+    color: "white",
+    marginBottom: 12,
+  },
+
+  posterWrapper: {
+    position: "relative",
+  },
 
   poster: {
     width: "100%",
-    height: 400,
-    borderRadius: 12,
-    marginBottom: 20,
+    height: 430,
+    borderRadius: 16,
   },
 
+  ratingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 12,
+  },
+  ratingText: {
+    marginLeft: 6,
+    color: "#A6A6A6",
+    fontSize: 15,
+  },
   saveBtn: {
     position: "absolute",
     top: 16,
@@ -303,21 +302,41 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
     borderRadius: 50,
   },
-
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#FFFFFF",
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "white",
+    marginTop: 28,
+    marginBottom: 10,
   },
 
   infoBox: {
-    marginTop: 20,
-    gap: 8,
+    backgroundColor: "#2C2F46",
+    borderRadius: 16,
+    padding: 20,
   },
 
-  bold: {
-    fontWeight: "bold",
-    color: "#FFFFFF", 
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderBottomColor: "rgba(255,255,255,0.1)",
+    borderBottomWidth: 1,
+    paddingVertical: 8,
+  },
+
+  infoLabel: {
+    color: "#A6A6A6",
+    fontWeight: "600",
+    width: "35%",
+  },
+
+  infoValue: {
+    color: "white",
+    width: "65%",
+    textAlign: "left",
+  },
+  centered: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
-
