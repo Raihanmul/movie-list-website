@@ -48,15 +48,22 @@ export default function SavedMovie() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>
-        Saved Movies
+      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20, color:"#A1A1E0" }}>
+        MovieList
       </Text>
 
-      {loading ? (
-        <Text>Loading...</Text>
-      ) : movies.length === 0 ? (
-        <Text>Belum ada film yang disimpan</Text>
-      ) : (
+     {loading ? (
+  <Text>Loading...</Text>
+) : movies.length === 0 ? (
+  <View style={{ justifyContent: "center", alignItems: "center", marginTop: 160 }}>
+    <Image
+      source={require("@/assets/images/not-found.png")}
+      style={{ width: 180, height: 180, marginBottom: 12 }}
+      resizeMode="contain"
+    />
+    <Text style={{ color: "#FFFFFF", fontSize: 32, fontWeight: "bold", textAlign: "center" }}>Movies Not Found</Text>
+  </View>
+) : (
         <FlatList
           data={movies}
           keyExtractor={(item) => item.imdbID}
@@ -76,11 +83,11 @@ export default function SavedMovie() {
               />
 
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 18, fontWeight: "600" }}>
+                <Text style={{ fontSize: 18, fontWeight: "600", color: "#FFFFFF" }}>
                   {item.Title}
                 </Text>
 
-                <Text style={{ color: "#666" }}>{item.Year}</Text>
+                <Text style={{ color: "gray" }}>{item.Year}</Text>
 
                 {item.imdbRating && <StarRating rating={item.imdbRating} />}
               </View>
@@ -97,11 +104,9 @@ export default function SavedMovie() {
             color="gray"
             onPress={() => router.back()}
           />
-          <Text>Home</Text>
         </View>
         <View style={styles.navItem}>
           <Ionicons name="bookmark" size={24} color="yellow" />
-          <Text>Saved</Text>
         </View>
       </View>
     </SafeAreaView>
@@ -112,13 +117,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
+    backgroundColor: "#16182D",
+    paddingBottom: 70,
   },
-  navContainer: {
+ navContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderColor: "#eee",
+    borderColor: "#15151C",
+    backgroundColor: "#15151C",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   navItem: {
     alignItems: "center",

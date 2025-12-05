@@ -195,7 +195,8 @@ export default function MovieDetailPage() {
   }
 
   return (
-    <ScrollView style={styles.container}>
+     <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
       {/* Back Button */}
       <Ionicons
         name="arrow-back"
@@ -230,55 +231,70 @@ export default function MovieDetailPage() {
       </View>
 
       {movie.imdbRating && movie.imdbRating !== "N/A" && (
-        <View style={{ marginTop: 6 }}>
-          <StarRating rating={movie.imdbRating} />
-          <Text style={{ marginTop: 4 }}>⭐ {movie.imdbRating}/10</Text>
-        </View>
-      )}
+  <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <StarRating rating={Number(movie.imdbRating) || 0} />
 
-      <View style={styles.infoBox}>
-        <Text>
-          <Text style={styles.bold}>Sinopsis:</Text> {movie.Plot}
-        </Text>
-        <Text>
-          <Text style={styles.bold}>Director:</Text> {movie.Director}
-        </Text>
-        <Text>
-          <Text style={styles.bold}>Writer:</Text> {movie.Writer}
-        </Text>
-        <Text>
-          <Text style={styles.bold}>Rated:</Text> {movie.Rated}
-        </Text>
-        <Text>
-          <Text style={styles.bold}>Genre:</Text> {movie.Genre}
-        </Text>
-        <Text>
-          <Text style={styles.bold}>Main Actors:</Text> {movie.Actors}
-        </Text>
-        <Text>
-          <Text style={styles.bold}>Type:</Text> {movie.Type}
-        </Text>
-        <Text>
-          <Text style={styles.bold}>Runtime:</Text> {movie.Runtime}
-        </Text>
-        <Text>
-          <Text style={styles.bold}>Released:</Text> {movie.Released}
-        </Text>
-      </View>
+    <Text style={{ marginLeft: 6, color: "gray", fontSize: 14 }}>
+      {Number(movie.imdbRating).toFixed(1)}/10
+    </Text>
+  </View>
+)}
+
+
+     <View style={styles.infoBox}>
+  <Text style={{ color: "#FFFFFF" }}>
+    <Text style={styles.bold}>Synopsis:</Text> {movie.Plot}
+  </Text>
+  <Text style={{ color: "#FFFFFF" }}>
+    <Text style={styles.bold}>Director:</Text> {movie.Director}
+  </Text>
+  <Text style={{ color: "#FFFFFF" }}>
+    <Text style={styles.bold}>Writer:</Text> {movie.Writer}
+  </Text>
+  <Text style={{ color: "#FFFFFF" }}>
+    <Text style={styles.bold}>Rated:</Text> {movie.Rated}
+  </Text>
+  <Text style={{ color: "#FFFFFF" }}>
+    <Text style={styles.bold}>Genre:</Text> {movie.Genre}
+  </Text>
+  <Text style={{ color: "#FFFFFF" }}>
+    <Text style={styles.bold}>Main Actors:</Text> {movie.Actors}
+  </Text>
+  <Text style={{ color: "#FFFFFF" }}>
+    <Text style={styles.bold}>Type:</Text> {movie.Type}
+  </Text>
+  <Text style={{ color: "#FFFFFF" }}>
+    <Text style={styles.bold}>Runtime:</Text> {movie.Runtime}
+  </Text>
+  <Text style={{ color: "#FFFFFF" }}>
+    <Text style={styles.bold}>Released:</Text> {movie.Released}
+  </Text>
+</View>
     </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, margin: 16 },
+   container: {
+    flex: 1,
+    backgroundColor: "#16182D", 
+  },
+  scrollContent: {
+    padding: 16,
+    backgroundColor: "#16182D", 
+  },
   centered: { flex: 1, justifyContent: "center", alignItems: "center" },
+
   backBtn: { marginBottom: 12 },
+
   poster: {
     width: "100%",
     height: 400,
     borderRadius: 12,
     marginBottom: 20,
   },
+
   saveBtn: {
     position: "absolute",
     top: 16,
@@ -287,7 +303,21 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
     borderRadius: 50,
   },
-  title: { fontSize: 28, fontWeight: "bold" },
-  infoBox: { marginTop: 20, gap: 8 },
-  bold: { fontWeight: "bold" },
+
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+  },
+
+  infoBox: {
+    marginTop: 20,
+    gap: 8,
+  },
+
+  bold: {
+    fontWeight: "bold",
+    color: "#FFFFFF", 
+  },
 });
+

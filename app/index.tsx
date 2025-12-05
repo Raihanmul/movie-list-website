@@ -88,29 +88,29 @@ export default function HomeScreen() {
     }
   };
 
- const fetchHighest = async () => {
-  try {
-    const res = await axios.get(
-      `https://www.omdbapi.com/?apikey=${API_KEY}&s=movie&page=3`
-    );
-
-    if (res.data.Search) {
-      const highestWithRatings = await Promise.all(
-        res.data.Search.map(async (item: Movie) => {
-          const detail = await axios.get(
-            `https://www.omdbapi.com/?apikey=${API_KEY}&i=${item.imdbID}`
-          );
-          return { ...item, imdbRating: parseFloat(detail.data.imdbRating) };
-        })
+  const fetchHighest = async () => {
+    try {
+      const res = await axios.get(
+        `https://www.omdbapi.com/?apikey=${API_KEY}&s=movie&page=3`
       );
 
-      highestWithRatings.sort((a, b) => b.imdbRating! - a.imdbRating!);
-      setHighest(highestWithRatings);
+      if (res.data.Search) {
+        const highestWithRatings = await Promise.all(
+          res.data.Search.map(async (item: Movie) => {
+            const detail = await axios.get(
+              `https://www.omdbapi.com/?apikey=${API_KEY}&i=${item.imdbID}`
+            );
+            return { ...item, imdbRating: parseFloat(detail.data.imdbRating) };
+          })
+        );
+
+        highestWithRatings.sort((a, b) => b.imdbRating! - a.imdbRating!);
+        setHighest(highestWithRatings);
+      }
+    } catch (e) {
+      console.log("Error fetching Highest:", e);
     }
-  } catch (e) {
-    console.log("Error fetching Highest:", e);
-  }
-};
+  };
 
   useEffect(() => {
     fetchMovies();
@@ -120,24 +120,131 @@ export default function HomeScreen() {
 
   return (
     <ScrollView>
-    <SafeAreaView style={styles.container}>
-      <Text
-        style={{
-          fontSize: 24,
-          fontWeight: "bold",
-          marginBottom: 20,
-          color: "#A1A1E0",
-        }}
-      >
-        MovieList
-      </Text>
+      <SafeAreaView style={styles.container}>
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "bold",
+            marginBottom: 20,
+            color: "#A1A1E0",
+          }}
+        >
+          MovieList
+        </Text>
 
-      {loading ? (
-        <View style={{ flex: 1 }}>
-          <Text>Loading...</Text>
+        {loading ? (
+          <View style={{ flex: 1 }}>
+            <Text>Loading...</Text>
+          </View>
+        ) : (
+          <View>
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontWeight: "bold",
+                fontSize: 20,
+                marginBottom: 10,
+              }}
+            >
+              New Movies
+            </Text>
+
+            <FlatList
+              data={movies}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => item.imdbID}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={{ width: 120, marginRight: 14 }}
+                  onPress={() => router.push(`/detail/${item.imdbID}`)}
+                >
+                  <Image
+                    source={{
+                      uri:
+                        item.Poster !== "N/A"
+                          ? item.Poster
+                          : "https://via.placeholder.com/120x180",
+                    }}
+                    style={{ width: 120, height: 180, borderRadius: 8 }}
+                  />
+
+                  <Text
+                    style={{
+                      color: "#FFF",
+                      fontSize: 13,
+                      fontWeight: "600",
+                      marginTop: 6,
+                    }}
+                    numberOfLines={1}
+                  >
+                    {item.Title}
+                  </Text>
+                  <Text style={{ color: "#999", fontSize: 12 }}>
+                    {item.Year}
+                  </Text>
+                  <Text>
+                    {item.imdbRating && <StarRating rating={item.imdbRating} />}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        )}
+        <View style={{ marginTop: 30 }}>
+          <Text
+            style={{
+              color: "#FFFFFF",
+              fontWeight: "bold",
+              fontSize: 20,
+              paddingBottom: 10,
+            }}
+          >
+            Popular Series
+          </Text>
+
+          <FlatList
+            data={series}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.imdbID}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={{ width: 120, marginRight: 14 }}
+                onPress={() => router.push(`/detail/${item.imdbID}`)}
+              >
+                <Image
+                  source={{
+                    uri:
+                      item.Poster !== "N/A"
+                        ? item.Poster
+                        : "https://via.placeholder.com/120x180",
+                  }}
+                  style={{ width: 120, height: 180, borderRadius: 8 }}
+                />
+
+                <Text
+                  style={{
+                    color: "#FFF",
+                    fontSize: 13,
+                    fontWeight: "600",
+                    marginTop: 6,
+                  }}
+                  numberOfLines={1}
+                >
+                  {item.Title}
+                </Text>
+
+                <Text style={{ color: "#999", fontSize: 12 }}>{item.Year}</Text>
+
+                <Text>
+                  {item.imdbRating && <StarRating rating={item.imdbRating} />}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
         </View>
-      ) : (
-        <View>
+        <View style={{ marginTop: 26 }}>
           <Text
             style={{
               color: "#FFFFFF",
@@ -146,12 +253,12 @@ export default function HomeScreen() {
               marginBottom: 10,
             }}
           >
-            New Movies
+            Movies To Watch
           </Text>
 
           <FlatList
-            data={movies}
-            horizontal={true}
+            data={highest}
+            horizontal
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item.imdbID}
             renderItem={({ item }) => (
@@ -181,121 +288,25 @@ export default function HomeScreen() {
                   {item.Title}
                 </Text>
                 <Text style={{ color: "#999", fontSize: 12 }}>{item.Year}</Text>
-                <Text>{item.imdbRating && <StarRating rating={item.imdbRating} />}</Text>
+                <Text>
+                  {item.imdbRating && <StarRating rating={item.imdbRating} />}
+                </Text>
               </TouchableOpacity>
             )}
           />
         </View>
-      )}
-      <View style={{ marginTop: 30 }}>
-        <Text
-          style={{
-            color: "#FFFFFF",
-            fontWeight: "bold",
-            fontSize: 20,
-            paddingBottom: 10,
-          }}
-        >
-          Popular Series
-        </Text>
-
-        <FlatList
-          data={series}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => item.imdbID}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={{ width: 120, marginRight: 14 }}
-              onPress={() => router.push(`/detail/${item.imdbID}`)}
-            >
-              <Image
-                source={{
-                  uri:
-                    item.Poster !== "N/A"
-                      ? item.Poster
-                      : "https://via.placeholder.com/120x180",
-                }}
-                style={{ width: 120, height: 180, borderRadius: 8 }}
-              />
-
-              <Text
-                style={{
-                  color: "#FFF",
-                  fontSize: 13,
-                  fontWeight: "600",
-                  marginTop: 6,
-                }}
-                numberOfLines={1}
-              >
-                {item.Title}
-              </Text>
-
-              <Text style={{ color: "#999", fontSize: 12 }}>{item.Year}</Text>
-
-              <Text>{item.imdbRating && <StarRating rating={item.imdbRating} />}</Text>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
-<View style={{ marginTop: 26 }}>
-  <Text style={{ color: "#FFFFFF", fontWeight: "bold", fontSize: 20, marginBottom: 10 }}>
-    Movies to watch
-  </Text>
-
-  <FlatList
-    data={highest}
-    horizontal
-    showsHorizontalScrollIndicator={false}
-    keyExtractor={(item) => item.imdbID}
-    renderItem={({ item }) => (
-      <TouchableOpacity
-        style={{ width: 120, marginRight: 14 }}
-        onPress={() => router.push(`/detail/${item.imdbID}`)}
-      >
-        <Image
-          source={{
-            uri: item.Poster !== "N/A"
-              ? item.Poster
-              : "https://via.placeholder.com/120x180",
-          }}
-          style={{ width: 120, height: 180, borderRadius: 8 }}
-        />
-
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: "700",
-            color: "#FFFFFF",
-            marginTop: 8,
-          }}
-          numberOfLines={1}
-        >
-          {item.Title}
-        </Text>
-
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-         <Text>{item.imdbRating && <StarRating rating={item.imdbRating} />}</Text> 
-          <Text style={{ color: "#ccc" }}>({item.Year})</Text>
+        <View style={styles.navContainer}>
+          <TouchableOpacity style={styles.navItem}>
+            <Ionicons name="home" size={24} color="#A1A1E0" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.navItem}
+            onPress={() => router.push("/savedMovie")}
+          >
+            <Ionicons name="bookmark-outline" size={24} color="gray" />
+          </TouchableOpacity>
         </View>
-      </TouchableOpacity>
-    )}
-  />
-</View>
-      <View style={styles.navContainer}>
-        <TouchableOpacity style={styles.navItem}>
-          <Ionicons name="home" size={24} color="#A1A1E0" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}
-            onPress={() => router.push("/savedMovie")}>
-          <Ionicons
-            name="bookmark-outline"
-            size={24}
-            color="gray"
-          />
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
     </ScrollView>
   );
 }
@@ -306,7 +317,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: "#16182D",
     paddingBottom: 70,
-    
   },
 
   navContainer: {
