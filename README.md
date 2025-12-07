@@ -112,7 +112,9 @@ Fitur:
 Aplikasi menggunakan API OMDb.  
 API Key disimpan di file `.env`:
 
-EXPO_PUBLIC_OMDB_API_KEY=your_api_key
+```bash
+OMDB_API_KEY=your_api_key
+```
 
 Import di code:
 
