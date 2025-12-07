@@ -1,50 +1,117 @@
-# Welcome to your Expo app 👋
+# MovieList — Mobile App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplikasi mobile untuk mencari film dan series, melihat detail lengkap, serta menyimpan film favorit ke local storage. Dibangun menggunakan React Native + Expo.
 
-## Get started
+---
 
-1. Install dependencies
+## Fitur Utama
 
-   ```bash
-   npm install
-   ```
+### Home Page
 
-2. Start the app
+Halaman utama aplikasi terdiri dari beberapa section:
 
-   ```bash
-   npx expo start
-   ```
+#### Search Movie
 
-In the output, you'll find options to open the app in a
+- Pengguna dapat mencari film atau series berdasarkan judul.
+- Aplikasi melakukan fetch data berdasarkan query pencarian.
+- Hasil pencarian akan muncul dalam bentuk list.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+#### Latest Movies
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Menampilkan daftar film terbaru yang diambil dari API.
 
-## Get a fresh project
+#### Recommended Series
 
-When you're ready, run:
+- Menampilkan rekomendasi series pilihan dalam list horizontal.
 
-```bash
-npm run reset-project
+#### Recommended Movies
+
+- Menampilkan rekomendasi film pilihan dalam list horizontal.
+
+---
+
+## Detail Page
+
+Halaman detail menampilkan informasi lengkap dari film atau series berdasarkan `imdbID`.
+
+Data yang ditampilkan mencakup:
+
+- Title
+- Year
+- Poster
+- IMDB Rating
+- Plot / Sinopsis
+- Director
+- Writer
+- Rated
+- Genre
+- Main Actors
+- Type (movie / series)
+- Runtime
+- Released
+
+Tersedia juga tombol untuk:
+
+- Menambahkan ke Saved
+- Menghapus dari Saved jika sudah tersimpan
+
+---
+
+## Saved Page
+
+Halaman untuk menampilkan semua film dan series yang telah disimpan pengguna melalui AsyncStorage.
+
+Fitur:
+
+- Menampilkan daftar item tersimpan
+- Navigasi ke halaman detail
+- Data akan tetap tersimpan meskipun aplikasi ditutup
+
+---
+
+## Teknologi yang Digunakan
+
+- React Native
+- Expo
+- Axios
+- AsyncStorage
+- React Navigation
+
+---
+
+## Struktur Folder (Contoh)
+
+/app
+/components - StarRating.tsx
+/detail
+/[id] - index.tsx
+/savedMovie - index.tsx
+
+- \_layout.tsx
+- index.tsx
+
+---
+
+## API
+
+Aplikasi menggunakan API OMDb.  
+API Key disimpan di file `.env`:
+
+EXPO_PUBLIC_OMDB_API_KEY=your_api_key
+
+Import di code:
+
+```tsx
+const API_KEY = process.env.EXPO_PUBLIC_OMDB_API_KEY;
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## Instalasi
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+git clone <repo-url>
+cd MovieList
+npm install
+npm start
+```
