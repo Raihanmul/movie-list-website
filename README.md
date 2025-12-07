@@ -119,7 +119,7 @@ OMDB_API_KEY=your_api_key
 Import di code:
 
 ```tsx
-const API_KEY = process.env.EXPO_PUBLIC_OMDB_API_KEY;
+const API_KEY = Constants.expoConfig?.extra?.OMDB_API_KEY;
 ```
 
 ---
