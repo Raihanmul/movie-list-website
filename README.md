@@ -81,9 +81,11 @@ Fitur:
 
 ## Struktur Folder
 
+```bash
 .
 ├── .idea/
 │ ├── caches/
+│ │   └── deviceStreaming.xml
 │ ├── deviceManager.xml
 │ ├── misc.xml
 │ ├── modules.xml
@@ -91,12 +93,17 @@ Fitur:
 │ └── vcs.xml
 ├── app/
 │ ├── components/
+│ │   └── StarRating.tsx
 │ ├── detail/
-│ │ └── [id]/
-│ └── savedMovie/
-├── assets/
+│ │   └── [id]/
+│ │       └── index.tsx
+│ ├── savedMovie/
+│ │   └── index.tsx
+│ ├── _layout.tsx
+│ └── index.tsx
 ├── .env
 └── README.md
+```
 
 ---
 
