@@ -433,6 +433,8 @@ export default function HomeScreen() {
   );
 }
 
+// Styling
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

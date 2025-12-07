@@ -4,33 +4,90 @@ Aplikasi mobile untuk mencari film dan series, melihat detail lengkap, serta men
 
 ---
 
-## Fitur Utama
+## Cara instalasi & Menjalankan Aplikasi
 
-### Home Page
+### 1. Clone Repository
 
-Halaman utama aplikasi terdiri dari beberapa section:
+```bash
+git clone <repo-url>
+cd MovieList
+```
 
-#### Search Movie
+### 2. Install Dependencies
 
-- Pengguna dapat mencari film atau series berdasarkan judul.
-- Aplikasi melakukan fetch data berdasarkan query pencarian.
-- Hasil pencarian akan muncul dalam bentuk list.
+```bash
+npm install
+```
 
-#### Latest Movies
+### 3. Setup API Key
 
-- Menampilkan daftar film terbaru yang diambil dari API.
+Buat file `.env` pada root project, lalu isi:
 
-#### Recommended Series
+```ini
+OMDB_API_KEY=your_api_key
+```
 
-- Menampilkan rekomendasi series pilihan dalam list horizontal.
+### 4. Jalankan Aplikasi
 
-#### Recommended Movies
+```bash
+npx expo start
+```
 
-- Menampilkan rekomendasi film pilihan dalam list horizontal.
+### 5. Jalankan di Emulator atau Device yang Digunakan
+
+#### a. Android Studio / Emulator
+
+Jalankan Emulator di terminal yang digunakan dengan:
+
+```bash
+emulator -avd nama_emulator
+```
+
+Lalu di Expo CLI, pilih `a` untuk membuka aplikasi Expo di emulator:
+
+```bash
+a
+```
+
+#### b. Expo Go (Real Device)
+
+- Install aplikasi Expo Go di Android/iOS
+- Jalankan:
+
+```bash
+npx expo start
+```
+
+Scan QR Code melalui kamera / Expo Go
 
 ---
 
-## Detail Page
+## Alur Navigasi & Interaksi Aplikasi
+
+### 1. Homepage
+
+- User dapat klik salah satu film untuk menuju halaman detail dari film tersebut.
+- Halaman utama menampilkan search bar dan juga daftar film yang terbagi menjadi beberapa section:
+
+#### a. Search Movie
+
+- Pengguna dapat mencari film atau series berdasarkan judul.
+- Aplikasi melakukan fetch data berdasarkan query pencarian.
+- Hasil pencarian akan muncul dalam bentuk list horizontal.
+
+#### b. Latest Movies
+
+- Menampilkan daftar film terbaru yang diambil dari API.
+
+#### c. Recommended Series
+
+- Menampilkan rekomendasi series pilihan dalam list horizontal.
+
+#### d. Recommended Movies
+
+- Menampilkan rekomendasi film pilihan dalam list horizontal.
+
+### 2. Detail Page
 
 Halaman detail menampilkan informasi lengkap dari film atau series berdasarkan `imdbID`.
 
@@ -52,30 +109,54 @@ Data yang ditampilkan mencakup:
 
 Tersedia juga tombol untuk:
 
-- Menambahkan ke Saved
-- Menghapus dari Saved jika sudah tersimpan
+- Menambahkan ke halaman Saved
+- Menghapus dari halaman Saved jika sudah tersimpan
 
----
-
-## Saved Page
+### 3. Saved Page
 
 Halaman untuk menampilkan semua film dan series yang telah disimpan pengguna melalui AsyncStorage.
 
 Fitur:
 
-- Menampilkan daftar item tersimpan
+- Menampilkan daftar item yang tersimpan
 - Navigasi ke halaman detail
 - Data akan tetap tersimpan meskipun aplikasi ditutup
 
 ---
 
-## Teknologi yang Digunakan
+## Pembagian Tugas Anggota Tim
 
-- [React Native](https://reactnative.dev/)
-- [Expo](https://expo.dev/)
-- [Axios](https://axios-http.com/)
-- AsyncStorage
-- React Navigation
+### 1. Raihan
+
+Backend / Navigation & API Intergration:
+
+- Implementasi navigasi antar halaman (Home → Detail → Saved).
+- Integrasi dan pengolahan API OMDb (fetch search, latest movies, rekomendasi).
+- Membuat fungsi penyimpanan data film (fitur Save) menggunakan AsyncStorage.
+- Membuat dan menghubungkan endpoint fetch detail berdasarkan imdbID.
+- Membuat seluruh halaman dasar (Home, Detail, Saved) sebelum styling.
+- Membuat fitur pencarian film (search query → fetch → render hasil).
+
+### 2. Arrafi
+
+Frontend / State Logic & UI Implementation:
+
+- Mengatur state logic untuk Home, Detail, dan Saved Page.
+- Merealisasikan desain UI/UX ke komponen React Native.
+- Membuat fitur rating tampil dalam bentuk bintang, bukan hanya angka.
+- Mengelompokkan data film di Homepage menjadi beberapa kategori (Latest Movies, Recommended Series, Recommended Movies, Search Result).
+- Membuat list film tampil dalam bentuk horizontal scroll.
+- Implementasi layout, komponen visual, dan styling agar konsisten.
+
+### 3. Fadli
+
+UI/UX Designer & Presentation
+
+- Mendesain tampilan mobile app.
+- Menentukan layout, warna, typography, dan struktur visual aplikasi.
+- Menyusun alur interaksi pengguna agar mudah dipahami.
+- Membuat materi presentasi akhir (slide, visual demo, penjelasan fitur).
+- Mendukung frontend saat mengubah desain ke komponen React Native.
 
 ---
 
@@ -110,25 +191,16 @@ Fitur:
 ## API
 
 Aplikasi menggunakan API OMDb.  
-API Key disimpan di file `.env`:
+API Key disimpan di file `.env`.
 
 ```bash
 OMDB_API_KEY=your_api_key
 ```
 
-Import di code:
+Diakses dengan cara:
 
 ```tsx
 const API_KEY = Constants.expoConfig?.extra?.OMDB_API_KEY;
 ```
 
 ---
-
-## Instalasi
-
-```bash
-git clone <repo-url>
-cd MovieList
-npm install
-npm start
-```
