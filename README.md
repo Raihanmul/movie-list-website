@@ -71,24 +71,32 @@ Fitur:
 
 ## Teknologi yang Digunakan
 
-- React Native
-- Expo
-- Axios
+- [React Native](https://reactnative.dev/)
+- [Expo](https://expo.dev/)
+- [Axios](https://axios-http.com/)
 - AsyncStorage
 - React Navigation
 
 ---
 
-## Struktur Folder (Contoh)
+## Struktur Folder
 
-/app
-/components - StarRating.tsx
-/detail
-/[id] - index.tsx
-/savedMovie - index.tsx
-
-- \_layout.tsx
-- index.tsx
+.
+├── .idea/
+│ ├── caches/
+│ ├── deviceManager.xml
+│ ├── misc.xml
+│ ├── modules.xml
+│ ├── movie-list-website.iml
+│ └── vcs.xml
+├── app/
+│ ├── components/
+│ ├── detail/
+│ │ └── [id]/
+│ └── savedMovie/
+├── assets/
+├── .env
+└── README.md
 
 ---
 
